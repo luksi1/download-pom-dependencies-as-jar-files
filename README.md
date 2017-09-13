@@ -1,9 +1,5 @@
-# download-jar-files-from-pom
-Download .jar files that are dependencies in a pom.xml file
-
-## Description
-
-Parse a pom.xml file for dependencies and download the respective artifact and version from [the central repository](http://central.sonatype.org).
+# download-pom-dependencies-as-jar-files
+Download pom.xml dependencies as jar files to your current working directory.
 
 ## Usage
 
