@@ -1,0 +1,33 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+use Config::Augeas;
+use Getopt::Long;
+use Cwd 'abs_path';
+
+my $file;
+my $wget = "/usr/bin/wget";
+
+GetOptions("file:s" => \$file)
+or die("You must indicate a pom.xml file to parse");
+
+# We'll need the absolute path
+$file = abs_path($file);
+my @artifacts;
+my @results;
+
+my $aug = Config::Augeas->new();
+$aug->set("/augeas/load/xml/lens","Xml.lns");
+$aug->set("/augeas/load/xml/incl", $file);
+$aug->load();
+@artifacts = $aug->match("/files/${file}/project/dependencies/dependency");
+
+foreach my $artifact(@artifacts) {
+  my $artifactId = $aug->get("${artifact}/artifactId/#text");
+  my $version = $aug->get("${artifact}/version/#text");
+  my $groupId = $aug->get("${artifact}/groupId/#text");
+  my $groupIdUrl = join('/', split(/\./, $groupId));
+  my $url = "http://repo1.maven.org/maven2/${groupIdUrl}/${artifactId}/${version}/${artifactId}-${version}.jar";
+  system "$wget $url";
+}
