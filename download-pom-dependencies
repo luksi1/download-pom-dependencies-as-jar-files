@@ -24,6 +24,12 @@ $aug->load();
 @artifacts = $aug->match("/files/${file}/project/dependencies/dependency");
 
 foreach my $artifact(@artifacts) {
+  # these should be in handled with a negative regex in the match selector
+  # unfortunately, that apparently was above my pay-grade
+  my $scope = $aug->get("${artifact}/scope/#text");
+  if ($scope) { next if $scope eq "test"; }
+  if ($scope) { next if $scope eq "provided"; }
+  if ($scope) { next if $scope eq "system"; }
   my $artifactId = $aug->get("${artifact}/artifactId/#text");
   my $version = $aug->get("${artifact}/version/#text");
   my $groupId = $aug->get("${artifact}/groupId/#text");
